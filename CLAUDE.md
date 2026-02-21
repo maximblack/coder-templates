@@ -12,6 +12,7 @@ templates/
   elixir/             Pente 5G core (Elixir/OTP + Phoenix)
   nodejs/             Node.js / TypeScript projects
   godot/              Godot 4.x game development
+  template-creator/   Meta-template for creating/deploying Coder templates
 ```
 
 ## Two-Layer Architecture
@@ -53,20 +54,21 @@ Parameters MUST be in the root template (Coder validates presets before `terrafo
 
 ## Coder Deployment
 
-Coder's tar upload does not support subdirectories. To deploy a template, flatten all files into a single directory:
+Coder's tar upload does not support subdirectories. To deploy a template, you must **inline** the dev-base resources into a single monolithic `main.tf`.
 
-```bash
-# Combine dev-base module + template into flat structure
-cp modules/dev-base/*.tf /tmp/upload/
-cp templates/elixir/main.tf /tmp/upload/
+**CRITICAL**: You cannot use `source = "./"` — this causes infinite recursion because the module references itself. Instead, inline the dev-base resources directly.
 
-# Fix module source path (from relative to local)
-sed -i 's|source.*=.*"../../modules/dev-base"|source = "./"|' /tmp/upload/main.tf
+The inlining process:
+1. Start with the template's `main.tf` (parameters, preset, data sources)
+2. Remove the `module "dev-base" { ... }` block entirely
+3. Add a `locals` block mapping variable references to data source values
+4. Paste the dev-base resources (agent, volume, container) using `local.*` and `data.*` references instead of `var.*`
+5. Paste the apps, IDEs, and Claude Code blocks using the same approach
+6. Upload the single `main.tf` via `coder_upload_tar_file` MCP tool or `coder templates push`
 
-# Upload via MCP or CLI
-```
+The `module "dev-base"` source path in the repo (`../../modules/dev-base`) is for local development only — it is never used in Coder deployment.
 
-The `source = "../../modules/dev-base"` path is for local development. When uploading to Coder, it must be rewritten to `"./"` since all files are in one directory.
+See the `template-creator` template's deployed version for a working example of the inlined approach.
 
 ## MCP Integration
 
