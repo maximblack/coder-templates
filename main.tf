@@ -11,46 +11,43 @@ terraform {
 }
 
 locals {
-  # Combined setup script: base init + git clone/update + entire.io + user script
   combined_setup = <<-SETUP
     #!/bin/bash
     set -e
 
-    # --- Base init ---
+    # Base init
     if [ ! -f ~/.init_done ]; then
       cp -rT /etc/skel ~ 2>/dev/null || true
       touch ~/.init_done
     fi
 
-    # --- Git clone/update ---
-    REPO_URL="${data.coder_parameter.repo_url.value}"
-    PROJECT_DIR="${data.coder_parameter.project_dir.value}"
-    if [ -n "$REPO_URL" ] && [ -n "$PROJECT_DIR" ]; then
-      if [ ! -d "$PROJECT_DIR/.git" ]; then
-        git clone "$REPO_URL" "$PROJECT_DIR"
+    # Git clone/update
+    if [ -n "${var.repo_url}" ] && [ -n "${var.project_dir}" ]; then
+      if [ ! -d "${var.project_dir}/.git" ]; then
+        git clone "${var.repo_url}" "${var.project_dir}"
       else
-        cd "$PROJECT_DIR" && git pull --ff-only 2>/dev/null || true
+        cd "${var.project_dir}" && git pull --ff-only 2>/dev/null || true
       fi
     fi
 
-    # --- entire.io CLI ---
+    # entire.io CLI
     if ! command -v entire &> /dev/null; then
       curl -fsSL https://get.entire.io | sh 2>/dev/null || true
     fi
-    if [ -n "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR" ]; then
-      cd "$PROJECT_DIR"
+    if [ -n "${var.project_dir}" ] && [ -d "${var.project_dir}" ]; then
+      cd "${var.project_dir}"
       entire enable --strategy manual-commit 2>/dev/null || true
     fi
 
-    # --- Project-specific setup ---
-    ${data.coder_parameter.setup_script.value}
+    # Project-specific setup
+    ${var.setup_script}
   SETUP
 }
 
 resource "coder_agent" "main" {
   arch = var.arch
   os   = "linux"
-  dir  = data.coder_parameter.project_dir.value
+  dir  = var.project_dir
 
   metadata {
     display_name = "CPU Usage"
@@ -127,9 +124,9 @@ resource "docker_volume" "home_volume" {
 }
 
 resource "docker_container" "workspace" {
-  count = var.workspace_start_count
-  image = data.coder_parameter.container_image.value
-  name  = "coder-${var.owner_name}-${var.workspace_name}"
+  count    = var.workspace_start_count
+  image    = var.container_image
+  name     = "coder-${var.owner_name}-${var.workspace_name}"
   hostname = var.workspace_name
 
   env = [

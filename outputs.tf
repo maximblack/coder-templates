@@ -4,6 +4,6 @@ output "agent_id" {
 }
 
 output "project_dir" {
-  value       = data.coder_parameter.project_dir.value
+  value       = var.project_dir
   description = "The project directory path"
 }

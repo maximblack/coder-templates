@@ -3,11 +3,11 @@ resource "coder_app" "preview" {
   slug         = "preview"
   display_name = "Preview"
   icon         = "/icon/globe.svg"
-  url          = "http://localhost:${data.coder_parameter.preview_port.value}"
+  url          = "http://localhost:${var.preview_port}"
   subdomain    = true
 
   healthcheck {
-    url       = "http://localhost:${data.coder_parameter.preview_port.value}/healthz"
+    url       = "http://localhost:${var.preview_port}/healthz"
     interval  = 5
     threshold = 3
   }

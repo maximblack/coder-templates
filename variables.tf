@@ -55,3 +55,39 @@ variable "ai_prompt" {
   default     = ""
   description = "AI task prompt from coder_task"
 }
+
+variable "repo_url" {
+  type        = string
+  default     = ""
+  description = "Git repository URL to clone"
+}
+
+variable "project_dir" {
+  type        = string
+  default     = "/home/coder/project"
+  description = "Clone destination path inside the container"
+}
+
+variable "setup_script" {
+  type        = string
+  default     = ""
+  description = "Project-specific setup script"
+}
+
+variable "system_prompt" {
+  type        = string
+  default     = ""
+  description = "AI system prompt for Claude Code"
+}
+
+variable "preview_port" {
+  type        = string
+  default     = "4000"
+  description = "Preview app port"
+}
+
+variable "container_image" {
+  type        = string
+  default     = "codercom/enterprise-base:ubuntu"
+  description = "Docker image for the workspace"
+}

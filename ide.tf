@@ -3,7 +3,7 @@ module "code-server" {
   source   = "registry.coder.com/coder/code-server/coder"
   version  = "1.4.2"
   agent_id = coder_agent.main.id
-  folder   = data.coder_parameter.project_dir.value
+  folder   = var.project_dir
 }
 
 module "cursor" {
@@ -11,7 +11,7 @@ module "cursor" {
   source   = "registry.coder.com/coder/cursor/coder"
   version  = "1.4.0"
   agent_id = coder_agent.main.id
-  folder   = data.coder_parameter.project_dir.value
+  folder   = var.project_dir
 }
 
 module "windsurf" {
@@ -19,7 +19,7 @@ module "windsurf" {
   source   = "registry.coder.com/coder/windsurf/coder"
   version  = "1.3.0"
   agent_id = coder_agent.main.id
-  folder   = data.coder_parameter.project_dir.value
+  folder   = var.project_dir
 }
 
 module "jetbrains" {
@@ -27,5 +27,5 @@ module "jetbrains" {
   source   = "registry.coder.com/coder/jetbrains/coder"
   version  = "1.3.0"
   agent_id = coder_agent.main.id
-  folder   = data.coder_parameter.project_dir.value
+  folder   = var.project_dir
 }
