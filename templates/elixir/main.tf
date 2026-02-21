@@ -184,6 +184,15 @@ data "coder_workspace_preset" "default" {
   }
 }
 
+# --- Sensitive Variables (injected via TF_VAR_*) ---
+
+variable "claude_code_oauth_token" {
+  type        = string
+  description = "OAuth token for Claude Code (set via TF_VAR_claude_code_oauth_token)"
+  sensitive   = true
+  default     = ""
+}
+
 # --- Module ---
 
 module "dev-base" {
@@ -205,4 +214,5 @@ module "dev-base" {
   preview_port          = data.coder_parameter.preview_port.value
   preview_display_name  = "Phoenix LiveView"
   preview_icon          = "${data.coder_workspace.me.access_url}/emojis/1f525.png"
+  oauth_token           = var.claude_code_oauth_token
 }
