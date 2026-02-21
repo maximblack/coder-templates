@@ -27,7 +27,7 @@ variable "bitbucket_username" {
   default   = ""
 }
 
-variable "bitbucket_app_password" {
+variable "bitbucket_api_token" {
   type      = string
   sensitive = true
   default   = ""
@@ -202,9 +202,9 @@ data "coder_workspace_preset" "jpu_server" {
     REPO_URL="https://bitbucket.org/jpugit/jpu.git"
 
     # --- Configure Bitbucket credentials ---
-    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
     fi
 
@@ -214,7 +214,7 @@ data "coder_workspace_preset" "jpu_server" {
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
         echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
+        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -296,9 +296,9 @@ data "coder_workspace_preset" "jpu_ui" {
     REPO_URL="https://bitbucket.org/jpugit/jpu_ui.git"
 
     # --- Configure Bitbucket credentials ---
-    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
     fi
 
@@ -308,7 +308,7 @@ data "coder_workspace_preset" "jpu_ui" {
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
         echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
+        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -392,9 +392,9 @@ data "coder_workspace_preset" "pente_react" {
     REPO_URL="https://bitbucket.org/jpugit/pente-react.git"
 
     # --- Configure Bitbucket credentials ---
-    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
     fi
 
@@ -404,7 +404,7 @@ data "coder_workspace_preset" "pente_react" {
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
         echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
+        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -488,9 +488,9 @@ data "coder_workspace_preset" "pente_react_tests" {
     REPO_URL="https://bitbucket.org/jpugit/pente-react-tests.git"
 
     # --- Configure Bitbucket credentials ---
-    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
     fi
 
@@ -500,7 +500,7 @@ data "coder_workspace_preset" "pente_react_tests" {
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
         echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
+        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -581,9 +581,9 @@ data "coder_workspace_preset" "jpu_tests" {
     REPO_URL="https://bitbucket.org/jpugit/jpu-tests.git"
 
     # --- Configure Bitbucket credentials ---
-    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
     fi
 
@@ -593,7 +593,7 @@ data "coder_workspace_preset" "jpu_tests" {
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
         echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
+        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -670,8 +670,8 @@ resource "coder_env" "bb_username" {
   value    = var.bitbucket_username
 }
 
-resource "coder_env" "bb_app_password" {
+resource "coder_env" "bb_api_token" {
   agent_id = module.dev-base.agent_id
-  name     = "BB_APP_PASSWORD"
-  value    = var.bitbucket_app_password
+  name     = "BB_API_TOKEN"
+  value    = var.bitbucket_api_token
 }

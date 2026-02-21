@@ -101,13 +101,13 @@ Bitbucket Cloud presets (JPU Server, JPU UI, Pente React, etc.) clone private re
 
 **Server-side setup** (add to Coder's `docker-compose.yml` environment):
 ```
-CODER_TERRAFORM_VAR_bitbucket_username=<your-bitbucket-username>
-CODER_TERRAFORM_VAR_bitbucket_app_password=<your-app-password>
+CODER_TERRAFORM_VAR_bitbucket_username=<your-atlassian-username>
+CODER_TERRAFORM_VAR_bitbucket_api_token=<your-api-token>
 ```
 
-Create the App Password at: Bitbucket > Personal settings > App passwords (permission: Repositories Read).
+Create the API token at: Atlassian account settings > Security > API tokens > Create API token with scopes (select Bitbucket, permission: Repositories Read). Note: Bitbucket app passwords are deprecated (Phase 3: June 2026).
 
-The template declares sensitive `variable "bitbucket_username"` and `variable "bitbucket_app_password"`, injects them as `coder_env` resources (`BB_USERNAME`, `BB_APP_PASSWORD`), and preset setup scripts auto-configure `~/.git-credentials` before cloning. Terraform redacts sensitive values in logs.
+The template declares sensitive `variable "bitbucket_username"` and `variable "bitbucket_api_token"`, injects them as `coder_env` resources (`BB_USERNAME`, `BB_API_TOKEN`), and preset setup scripts auto-configure `~/.git-credentials` before cloning. Terraform redacts sensitive values in logs.
 
 ## Conventions
 
