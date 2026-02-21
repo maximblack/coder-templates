@@ -19,11 +19,6 @@ data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 data "coder_task" "me" {}
 
-data "coder_external_auth" "bitbucket" {
-  id       = "bitbucket-cloud"
-  optional = true
-}
-
 # --- Parameters ---
 
 data "coder_parameter" "system_prompt" {
@@ -196,15 +191,25 @@ data "coder_workspace_preset" "jpu_server" {
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
-      git clone "$REPO_URL" "$PROJECT_DIR"
+      git clone "$REPO_URL" "$PROJECT_DIR" || {
+        echo "========================================"
+        echo "  Bitbucket clone failed!"
+        echo "  Configure credentials (one-time):"
+        echo "    git config --global credential.helper store"
+        echo "    git clone $$REPO_URL $$PROJECT_DIR"
+        echo "  Use your Bitbucket username + App Password"
+        echo "  (Bitbucket > Personal settings > App passwords)"
+        echo "========================================"
+        mkdir -p "$PROJECT_DIR"
+      }
     else
       cd "$PROJECT_DIR"
-      git fetch
+      git fetch 2>/dev/null || true
       if git diff-index --quiet HEAD -- && \
         [ -z "$$(git status --porcelain --untracked-files=no)" ] && \
         [ -z "$$(git log --branches --not --remotes)" ]; then
         echo "Repo is clean. Pulling latest changes..."
-        git pull
+        git pull 2>/dev/null || true
       else
         echo "Repo has uncommitted or unpushed changes. Skipping pull."
       fi
@@ -234,7 +239,9 @@ data "coder_workspace_preset" "jpu_server" {
     echo "  JPU Server environment ready!"
     echo "========================================"
 
-    npm start > /tmp/dev-server.log 2>&1 &
+    if [ -f "package.json" ]; then
+      npm start > /tmp/dev-server.log 2>&1 &
+    fi
     EOT
 
     "preview_port"    = "3000"
@@ -277,15 +284,25 @@ data "coder_workspace_preset" "jpu_ui" {
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
-      git clone "$REPO_URL" "$PROJECT_DIR"
+      git clone "$REPO_URL" "$PROJECT_DIR" || {
+        echo "========================================"
+        echo "  Bitbucket clone failed!"
+        echo "  Configure credentials (one-time):"
+        echo "    git config --global credential.helper store"
+        echo "    git clone $$REPO_URL $$PROJECT_DIR"
+        echo "  Use your Bitbucket username + App Password"
+        echo "  (Bitbucket > Personal settings > App passwords)"
+        echo "========================================"
+        mkdir -p "$PROJECT_DIR"
+      }
     else
       cd "$PROJECT_DIR"
-      git fetch
+      git fetch 2>/dev/null || true
       if git diff-index --quiet HEAD -- && \
         [ -z "$$(git status --porcelain --untracked-files=no)" ] && \
         [ -z "$$(git log --branches --not --remotes)" ]; then
         echo "Repo is clean. Pulling latest changes..."
-        git pull
+        git pull 2>/dev/null || true
       else
         echo "Repo has uncommitted or unpushed changes. Skipping pull."
       fi
@@ -315,7 +332,9 @@ data "coder_workspace_preset" "jpu_ui" {
     echo "  JPU UI environment ready!"
     echo "========================================"
 
-    node serve.js > /tmp/dev-server.log 2>&1 &
+    if [ -f "serve.js" ]; then
+      node serve.js > /tmp/dev-server.log 2>&1 &
+    fi
     EOT
 
     "preview_port"    = "3000"
@@ -360,15 +379,25 @@ data "coder_workspace_preset" "pente_react" {
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
-      git clone "$REPO_URL" "$PROJECT_DIR"
+      git clone "$REPO_URL" "$PROJECT_DIR" || {
+        echo "========================================"
+        echo "  Bitbucket clone failed!"
+        echo "  Configure credentials (one-time):"
+        echo "    git config --global credential.helper store"
+        echo "    git clone $$REPO_URL $$PROJECT_DIR"
+        echo "  Use your Bitbucket username + App Password"
+        echo "  (Bitbucket > Personal settings > App passwords)"
+        echo "========================================"
+        mkdir -p "$PROJECT_DIR"
+      }
     else
       cd "$PROJECT_DIR"
-      git fetch
+      git fetch 2>/dev/null || true
       if git diff-index --quiet HEAD -- && \
         [ -z "$$(git status --porcelain --untracked-files=no)" ] && \
         [ -z "$$(git log --branches --not --remotes)" ]; then
         echo "Repo is clean. Pulling latest changes..."
-        git pull
+        git pull 2>/dev/null || true
       else
         echo "Repo has uncommitted or unpushed changes. Skipping pull."
       fi
@@ -398,7 +427,9 @@ data "coder_workspace_preset" "pente_react" {
     echo "  Pente React environment ready!"
     echo "========================================"
 
-    npm run dev > /tmp/dev-server.log 2>&1 &
+    if [ -f "package.json" ]; then
+      npm run dev > /tmp/dev-server.log 2>&1 &
+    fi
     EOT
 
     "preview_port"    = "3000"
@@ -443,15 +474,25 @@ data "coder_workspace_preset" "pente_react_tests" {
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
-      git clone "$REPO_URL" "$PROJECT_DIR"
+      git clone "$REPO_URL" "$PROJECT_DIR" || {
+        echo "========================================"
+        echo "  Bitbucket clone failed!"
+        echo "  Configure credentials (one-time):"
+        echo "    git config --global credential.helper store"
+        echo "    git clone $$REPO_URL $$PROJECT_DIR"
+        echo "  Use your Bitbucket username + App Password"
+        echo "  (Bitbucket > Personal settings > App passwords)"
+        echo "========================================"
+        mkdir -p "$PROJECT_DIR"
+      }
     else
       cd "$PROJECT_DIR"
-      git fetch
+      git fetch 2>/dev/null || true
       if git diff-index --quiet HEAD -- && \
         [ -z "$$(git status --porcelain --untracked-files=no)" ] && \
         [ -z "$$(git log --branches --not --remotes)" ]; then
         echo "Repo is clean. Pulling latest changes..."
-        git pull
+        git pull 2>/dev/null || true
       else
         echo "Repo has uncommitted or unpushed changes. Skipping pull."
       fi
@@ -525,15 +566,25 @@ data "coder_workspace_preset" "jpu_tests" {
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
-      git clone "$REPO_URL" "$PROJECT_DIR"
+      git clone "$REPO_URL" "$PROJECT_DIR" || {
+        echo "========================================"
+        echo "  Bitbucket clone failed!"
+        echo "  Configure credentials (one-time):"
+        echo "    git config --global credential.helper store"
+        echo "    git clone $$REPO_URL $$PROJECT_DIR"
+        echo "  Use your Bitbucket username + App Password"
+        echo "  (Bitbucket > Personal settings > App passwords)"
+        echo "========================================"
+        mkdir -p "$PROJECT_DIR"
+      }
     else
       cd "$PROJECT_DIR"
-      git fetch
+      git fetch 2>/dev/null || true
       if git diff-index --quiet HEAD -- && \
         [ -z "$$(git status --porcelain --untracked-files=no)" ] && \
         [ -z "$$(git log --branches --not --remotes)" ]; then
         echo "Repo is clean. Pulling latest changes..."
-        git pull
+        git pull 2>/dev/null || true
       else
         echo "Repo has uncommitted or unpushed changes. Skipping pull."
       fi

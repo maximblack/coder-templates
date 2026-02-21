@@ -95,30 +95,19 @@ The `mcp` variable accepts any JSON string matching the claude-code module's MCP
 {"mcpServers": {"name": {"command": "...", "args": ["..."]}}}
 ```
 
-## External Auth
+## Bitbucket Access (Manual Credentials)
 
-Bitbucket Cloud is configured as an external auth provider (`bitbucket-cloud`). Templates that clone from Bitbucket reference it with:
+Bitbucket Cloud presets (JPU Server, JPU UI, Pente React, etc.) clone private repos via HTTPS. Since Coder external auth for multiple providers requires a Premium license, credentials are configured manually per workspace (one-time — persists in the volume).
 
-```hcl
-data "coder_external_auth" "bitbucket" {
-  id       = "bitbucket-cloud"
-  optional = true
-}
-```
-
-`optional = true` allows the template to work without Bitbucket auth (e.g., the generic "Node.js App" preset). Presets that clone BB repos will prompt the user to authenticate on first use.
-
-HTTPS clone URLs (`https://bitbucket.org/...`) work automatically — Coder's `GIT_ASKPASS` injects the OAuth token. No SSH keys or manual token management needed.
-
-**Server-side setup** (Coder control plane env vars):
-```
-CODER_EXTERNAL_AUTH_<N>_ID=bitbucket-cloud
-CODER_EXTERNAL_AUTH_<N>_TYPE=bitbucket-cloud
-CODER_EXTERNAL_AUTH_<N>_CLIENT_ID=<OAuth consumer key>
-CODER_EXTERNAL_AUTH_<N>_CLIENT_SECRET=<OAuth consumer secret>
-```
-
-The OAuth consumer is created in Bitbucket Cloud → Workspace settings → OAuth consumers. Required permissions: **Repository: Read**, **Account: Read**. Callback URL: `https://<coder-url>/external-auth/bitbucket-cloud/callback`.
+On first workspace start with a BB preset, the clone will fail with setup instructions:
+1. Create a Bitbucket App Password: Bitbucket > Personal settings > App passwords (permission: Repositories Read)
+2. In the workspace terminal:
+   ```
+   git config --global credential.helper store
+   git clone https://bitbucket.org/jpugit/<repo>.git /home/coder/projects/app
+   ```
+3. Enter your Bitbucket username + app password when prompted
+4. Credentials are stored in `~/.git-credentials` and persist across workspace restarts
 
 ## Conventions
 
