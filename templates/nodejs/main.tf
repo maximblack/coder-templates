@@ -19,7 +19,7 @@ data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 data "coder_task" "me" {}
 
-# --- Sensitive Variables (injected via CODER_TERRAFORM_VAR_*) ---
+# --- Sensitive Variables (injected via TF_VAR_*) ---
 
 variable "bitbucket_username" {
   type      = string
@@ -203,9 +203,13 @@ data "coder_workspace_preset" "jpu_server" {
 
     # --- Configure Bitbucket credentials ---
     if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
+      # URL-encode @ in username (email) for git-credentials URL format
+      BB_USER_ENCODED=$$(echo "$$BB_USERNAME" | sed 's/@/%40/g')
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USER_ENCODED:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
+      # Unset Coder's GIT_ASKPASS — it only supports configured external auth providers
+      unset GIT_ASKPASS
     fi
 
     # --- Clone or update repository ---
@@ -213,8 +217,8 @@ data "coder_workspace_preset" "jpu_server" {
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
+        echo "Clone failed. Set TF_VAR_bitbucket_username and"
+        echo "TF_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -297,9 +301,13 @@ data "coder_workspace_preset" "jpu_ui" {
 
     # --- Configure Bitbucket credentials ---
     if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
+      # URL-encode @ in username (email) for git-credentials URL format
+      BB_USER_ENCODED=$$(echo "$$BB_USERNAME" | sed 's/@/%40/g')
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USER_ENCODED:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
+      # Unset Coder's GIT_ASKPASS — it only supports configured external auth providers
+      unset GIT_ASKPASS
     fi
 
     # --- Clone or update repository ---
@@ -307,8 +315,8 @@ data "coder_workspace_preset" "jpu_ui" {
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
+        echo "Clone failed. Set TF_VAR_bitbucket_username and"
+        echo "TF_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -393,9 +401,13 @@ data "coder_workspace_preset" "pente_react" {
 
     # --- Configure Bitbucket credentials ---
     if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
+      # URL-encode @ in username (email) for git-credentials URL format
+      BB_USER_ENCODED=$$(echo "$$BB_USERNAME" | sed 's/@/%40/g')
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USER_ENCODED:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
+      # Unset Coder's GIT_ASKPASS — it only supports configured external auth providers
+      unset GIT_ASKPASS
     fi
 
     # --- Clone or update repository ---
@@ -403,8 +415,8 @@ data "coder_workspace_preset" "pente_react" {
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
+        echo "Clone failed. Set TF_VAR_bitbucket_username and"
+        echo "TF_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -489,9 +501,13 @@ data "coder_workspace_preset" "pente_react_tests" {
 
     # --- Configure Bitbucket credentials ---
     if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
+      # URL-encode @ in username (email) for git-credentials URL format
+      BB_USER_ENCODED=$$(echo "$$BB_USERNAME" | sed 's/@/%40/g')
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USER_ENCODED:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
+      # Unset Coder's GIT_ASKPASS — it only supports configured external auth providers
+      unset GIT_ASKPASS
     fi
 
     # --- Clone or update repository ---
@@ -499,8 +515,8 @@ data "coder_workspace_preset" "pente_react_tests" {
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
+        echo "Clone failed. Set TF_VAR_bitbucket_username and"
+        echo "TF_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -582,9 +598,13 @@ data "coder_workspace_preset" "jpu_tests" {
 
     # --- Configure Bitbucket credentials ---
     if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_API_TOKEN" ]; then
+      # URL-encode @ in username (email) for git-credentials URL format
+      BB_USER_ENCODED=$$(echo "$$BB_USERNAME" | sed 's/@/%40/g')
       git config --global credential.helper store
-      echo "https://$$BB_USERNAME:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
+      echo "https://$$BB_USER_ENCODED:$$BB_API_TOKEN@bitbucket.org" > ~/.git-credentials
       chmod 600 ~/.git-credentials
+      # Unset Coder's GIT_ASKPASS — it only supports configured external auth providers
+      unset GIT_ASKPASS
     fi
 
     # --- Clone or update repository ---
@@ -592,8 +612,8 @@ data "coder_workspace_preset" "jpu_tests" {
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
-        echo "CODER_TERRAFORM_VAR_bitbucket_api_token in Coder docker-compose."
+        echo "Clone failed. Set TF_VAR_bitbucket_username and"
+        echo "TF_VAR_bitbucket_api_token in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
