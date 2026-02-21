@@ -20,6 +20,11 @@ resource "coder_agent" "main" {
       cp -rT /etc/skel ~
       touch ~/.init_done
     fi
+    # Install Entire.io (AI session capture)
+    if ! command -v entire >/dev/null 2>&1; then
+      curl -fsSL https://entire.io/install.sh | bash
+      grep -q '/.local/bin' ~/.bashrc 2>/dev/null || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+    fi
   EOT
 
   env = {
@@ -123,6 +128,7 @@ resource "docker_container" "workspace" {
   name     = "coder-${var.owner_name}-${lower(var.workspace_name)}"
   hostname = var.workspace_name
   user     = "coder"
+  runtime  = var.docker_runtime != "" ? var.docker_runtime : null
   entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "/localhost|127\\\\.0\\\\.0\\\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.main.token}"]
   host {

@@ -92,6 +92,20 @@ data "coder_workspace_preset" "default" {
     PROJECT_DIR="/home/coder/projects/pente-elixir"
     REPO_URL="https://github.com/maximblack/max-core.git"
 
+    # --- Start Docker daemon (sysbox-runc provides DinD) ---
+    if ! docker ps >/dev/null 2>&1; then
+      echo "Starting Docker daemon (sysbox DinD)..."
+      sudo rm -f /var/run/docker.pid
+      sudo dockerd > /tmp/dockerd.log 2>&1 &
+      for i in $(seq 1 30); do
+        docker ps >/dev/null 2>&1 && break
+        sleep 1
+      done
+      docker ps >/dev/null 2>&1 && echo "Docker is ready." || echo "Warning: Docker daemon did not start. Check /tmp/dockerd.log"
+    else
+      echo "Docker daemon already running."
+    fi
+
     # --- System Dependencies ---
     if ! dpkg -l | grep -q lksctp-tools 2>/dev/null; then
       sudo apt-get update && sudo apt-get install -y \
@@ -215,4 +229,5 @@ module "dev-base" {
   preview_display_name  = "Phoenix LiveView"
   preview_icon          = "${data.coder_workspace.me.access_url}/emojis/1f525.png"
   oauth_token           = var.claude_code_oauth_token
+  docker_runtime        = "sysbox-runc"
 }

@@ -97,3 +97,9 @@ variable "mcp" {
   description = "MCP configuration JSON for Claude Code (from playwright-mcp or custom)"
   default     = ""
 }
+
+variable "docker_runtime" {
+  type        = string
+  description = "Docker runtime for the workspace container (e.g. sysbox-runc for Docker-in-Docker)"
+  default     = ""
+}
