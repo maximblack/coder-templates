@@ -95,19 +95,19 @@ The `mcp` variable accepts any JSON string matching the claude-code module's MCP
 {"mcpServers": {"name": {"command": "...", "args": ["..."]}}}
 ```
 
-## Bitbucket Access (Manual Credentials)
+## Bitbucket Access
 
-Bitbucket Cloud presets (JPU Server, JPU UI, Pente React, etc.) clone private repos via HTTPS. Since Coder external auth for multiple providers requires a Premium license, credentials are configured manually per workspace (one-time — persists in the volume).
+Bitbucket Cloud presets (JPU Server, JPU UI, Pente React, etc.) clone private repos via HTTPS. Credentials are injected via Terraform variables from the Coder control plane.
 
-On first workspace start with a BB preset, the clone will fail with setup instructions:
-1. Create a Bitbucket App Password: Bitbucket > Personal settings > App passwords (permission: Repositories Read)
-2. In the workspace terminal:
-   ```
-   git config --global credential.helper store
-   git clone https://bitbucket.org/jpugit/<repo>.git /home/coder/projects/app
-   ```
-3. Enter your Bitbucket username + app password when prompted
-4. Credentials are stored in `~/.git-credentials` and persist across workspace restarts
+**Server-side setup** (add to Coder's `docker-compose.yml` environment):
+```
+CODER_TERRAFORM_VAR_bitbucket_username=<your-bitbucket-username>
+CODER_TERRAFORM_VAR_bitbucket_app_password=<your-app-password>
+```
+
+Create the App Password at: Bitbucket > Personal settings > App passwords (permission: Repositories Read).
+
+The template declares sensitive `variable "bitbucket_username"` and `variable "bitbucket_app_password"`, injects them as `coder_env` resources (`BB_USERNAME`, `BB_APP_PASSWORD`), and preset setup scripts auto-configure `~/.git-credentials` before cloning. Terraform redacts sensitive values in logs.
 
 ## Conventions
 

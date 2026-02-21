@@ -19,6 +19,20 @@ data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 data "coder_task" "me" {}
 
+# --- Sensitive Variables (injected via CODER_TERRAFORM_VAR_*) ---
+
+variable "bitbucket_username" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "bitbucket_app_password" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
 # --- Parameters ---
 
 data "coder_parameter" "system_prompt" {
@@ -187,19 +201,20 @@ data "coder_workspace_preset" "jpu_server" {
     PROJECT_DIR="/home/coder/projects/app"
     REPO_URL="https://bitbucket.org/jpugit/jpu.git"
 
+    # --- Configure Bitbucket credentials ---
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+      git config --global credential.helper store
+      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      chmod 600 ~/.git-credentials
+    fi
+
     # --- Clone or update repository ---
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "========================================"
-        echo "  Bitbucket clone failed!"
-        echo "  Configure credentials (one-time):"
-        echo "    git config --global credential.helper store"
-        echo "    git clone $$REPO_URL $$PROJECT_DIR"
-        echo "  Use your Bitbucket username + App Password"
-        echo "  (Bitbucket > Personal settings > App passwords)"
-        echo "========================================"
+        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
+        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -280,19 +295,20 @@ data "coder_workspace_preset" "jpu_ui" {
     PROJECT_DIR="/home/coder/projects/app"
     REPO_URL="https://bitbucket.org/jpugit/jpu_ui.git"
 
+    # --- Configure Bitbucket credentials ---
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+      git config --global credential.helper store
+      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      chmod 600 ~/.git-credentials
+    fi
+
     # --- Clone or update repository ---
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "========================================"
-        echo "  Bitbucket clone failed!"
-        echo "  Configure credentials (one-time):"
-        echo "    git config --global credential.helper store"
-        echo "    git clone $$REPO_URL $$PROJECT_DIR"
-        echo "  Use your Bitbucket username + App Password"
-        echo "  (Bitbucket > Personal settings > App passwords)"
-        echo "========================================"
+        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
+        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -375,19 +391,20 @@ data "coder_workspace_preset" "pente_react" {
     PROJECT_DIR="/home/coder/projects/app"
     REPO_URL="https://bitbucket.org/jpugit/pente-react.git"
 
+    # --- Configure Bitbucket credentials ---
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+      git config --global credential.helper store
+      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      chmod 600 ~/.git-credentials
+    fi
+
     # --- Clone or update repository ---
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "========================================"
-        echo "  Bitbucket clone failed!"
-        echo "  Configure credentials (one-time):"
-        echo "    git config --global credential.helper store"
-        echo "    git clone $$REPO_URL $$PROJECT_DIR"
-        echo "  Use your Bitbucket username + App Password"
-        echo "  (Bitbucket > Personal settings > App passwords)"
-        echo "========================================"
+        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
+        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -470,19 +487,20 @@ data "coder_workspace_preset" "pente_react_tests" {
     PROJECT_DIR="/home/coder/projects/app"
     REPO_URL="https://bitbucket.org/jpugit/pente-react-tests.git"
 
+    # --- Configure Bitbucket credentials ---
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+      git config --global credential.helper store
+      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      chmod 600 ~/.git-credentials
+    fi
+
     # --- Clone or update repository ---
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "========================================"
-        echo "  Bitbucket clone failed!"
-        echo "  Configure credentials (one-time):"
-        echo "    git config --global credential.helper store"
-        echo "    git clone $$REPO_URL $$PROJECT_DIR"
-        echo "  Use your Bitbucket username + App Password"
-        echo "  (Bitbucket > Personal settings > App passwords)"
-        echo "========================================"
+        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
+        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -562,19 +580,20 @@ data "coder_workspace_preset" "jpu_tests" {
     PROJECT_DIR="/home/coder/projects/app"
     REPO_URL="https://bitbucket.org/jpugit/jpu-tests.git"
 
+    # --- Configure Bitbucket credentials ---
+    if [ -n "$$BB_USERNAME" ] && [ -n "$$BB_APP_PASSWORD" ]; then
+      git config --global credential.helper store
+      echo "https://$$BB_USERNAME:$$BB_APP_PASSWORD@bitbucket.org" > ~/.git-credentials
+      chmod 600 ~/.git-credentials
+    fi
+
     # --- Clone or update repository ---
     mkdir -p /home/coder/projects
     if [ ! -d "$PROJECT_DIR/.git" ]; then
       rm -rf "$PROJECT_DIR"
       git clone "$REPO_URL" "$PROJECT_DIR" || {
-        echo "========================================"
-        echo "  Bitbucket clone failed!"
-        echo "  Configure credentials (one-time):"
-        echo "    git config --global credential.helper store"
-        echo "    git clone $$REPO_URL $$PROJECT_DIR"
-        echo "  Use your Bitbucket username + App Password"
-        echo "  (Bitbucket > Personal settings > App passwords)"
-        echo "========================================"
+        echo "Clone failed. Set CODER_TERRAFORM_VAR_bitbucket_username and"
+        echo "CODER_TERRAFORM_VAR_bitbucket_app_password in Coder docker-compose."
         mkdir -p "$PROJECT_DIR"
       }
     else
@@ -641,4 +660,18 @@ module "dev-base" {
   preview_port          = data.coder_parameter.preview_port.value
   preview_display_name  = "Web App"
   preview_icon          = "${data.coder_workspace.me.access_url}/emojis/1f310.png"
+}
+
+# --- Bitbucket credentials as agent env vars ---
+
+resource "coder_env" "bb_username" {
+  agent_id = module.dev-base.agent_id
+  name     = "BB_USERNAME"
+  value    = var.bitbucket_username
+}
+
+resource "coder_env" "bb_app_password" {
+  agent_id = module.dev-base.agent_id
+  name     = "BB_APP_PASSWORD"
+  value    = var.bitbucket_app_password
 }
