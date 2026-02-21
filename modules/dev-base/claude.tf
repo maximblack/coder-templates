@@ -14,6 +14,7 @@ module "claude-code" {
   permission_mode        = "plan"
   post_install_script    = var.setup_script
   claude_code_oauth_token = var.oauth_token
+  mcp                     = var.mcp
 }
 
 # --- AI Task ---

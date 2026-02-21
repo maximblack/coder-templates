@@ -91,3 +91,9 @@ variable "preview_icon" {
   description = "Icon URL for the preview app"
   default     = ""
 }
+
+variable "mcp" {
+  type        = string
+  description = "MCP configuration JSON for Claude Code (from playwright-mcp or custom)"
+  default     = ""
+}
