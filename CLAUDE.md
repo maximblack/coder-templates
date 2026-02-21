@@ -95,9 +95,34 @@ The `mcp` variable accepts any JSON string matching the claude-code module's MCP
 {"mcpServers": {"name": {"command": "...", "args": ["..."]}}}
 ```
 
+## External Auth
+
+Bitbucket Cloud is configured as an external auth provider (`bitbucket-cloud`). Templates that clone from Bitbucket reference it with:
+
+```hcl
+data "coder_external_auth" "bitbucket" {
+  id       = "bitbucket-cloud"
+  optional = true
+}
+```
+
+`optional = true` allows the template to work without Bitbucket auth (e.g., the generic "Node.js App" preset). Presets that clone BB repos will prompt the user to authenticate on first use.
+
+HTTPS clone URLs (`https://bitbucket.org/...`) work automatically — Coder's `GIT_ASKPASS` injects the OAuth token. No SSH keys or manual token management needed.
+
+**Server-side setup** (Coder control plane env vars):
+```
+CODER_EXTERNAL_AUTH_<N>_ID=bitbucket-cloud
+CODER_EXTERNAL_AUTH_<N>_TYPE=bitbucket-cloud
+CODER_EXTERNAL_AUTH_<N>_CLIENT_ID=<OAuth consumer key>
+CODER_EXTERNAL_AUTH_<N>_CLIENT_SECRET=<OAuth consumer secret>
+```
+
+The OAuth consumer is created in Bitbucket Cloud → Workspace settings → OAuth consumers. Required permissions: **Repository: Read**, **Account: Read**. Callback URL: `https://<coder-url>/external-auth/bitbucket-cloud/callback`.
+
 ## Conventions
 
-- One preset per template (set `default = true`)
+- Default preset per template uses `default = true`; additional presets omit it
 - Setup scripts are idempotent — safe to re-run on workspace restart
 - Setup scripts check for existing installations before re-installing
 - Clone logic: skip `git pull` if there are uncommitted or unpushed changes
