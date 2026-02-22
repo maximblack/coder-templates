@@ -27,12 +27,12 @@ resource "coder_agent" "main" {
     fi
   EOT
 
-  env = {
+  env = merge({
     GIT_AUTHOR_NAME     = coalesce(var.owner_full_name, var.owner_name)
     GIT_AUTHOR_EMAIL    = var.owner_email
     GIT_COMMITTER_NAME  = coalesce(var.owner_full_name, var.owner_name)
     GIT_COMMITTER_EMAIL = var.owner_email
-  }
+  }, var.agent_env)
 
   metadata {
     display_name = "CPU Usage"

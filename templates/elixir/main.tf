@@ -276,4 +276,9 @@ module "dev-base" {
   oauth_token           = var.claude_code_oauth_token
   docker_runtime        = "sysbox-runc"
   sctp_port             = 38412
+  agent_env = {
+    N2_ADDRESS = "0.0.0.0"
+    N2_PORT    = "38412"
+    AUTO_SEED  = "true"
+  }
 }

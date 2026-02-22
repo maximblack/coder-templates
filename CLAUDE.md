@@ -13,6 +13,8 @@ templates/
   nodejs/             Node.js / TypeScript projects
   godot/              Godot 4.x game development
   template-creator/   Meta-template for creating/deploying Coder templates
+scripts/
+  deploy.py           Inlines module into single main.tf for Coder upload
 ```
 
 ## Two-Layer Architecture
@@ -54,21 +56,39 @@ Parameters MUST be in the root template (Coder validates presets before `terrafo
 
 ## Coder Deployment
 
-Coder's tar upload does not support subdirectories. To deploy a template, you must **inline** the dev-base resources into a single monolithic `main.tf`.
+### Git Source (Primary)
 
-**CRITICAL**: You cannot use `source = "./"` — this causes infinite recursion because the module references itself. Instead, inline the dev-base resources directly.
+Templates reference the shared module via git URL. Coder's provisioner resolves git sources at `terraform init` time, so only a single `main.tf` needs to be uploaded via tar:
 
-The inlining process:
-1. Start with the template's `main.tf` (parameters, preset, data sources)
-2. Remove the `module "dev-base" { ... }` block entirely
-3. Add a `locals` block mapping variable references to data source values
-4. Paste the dev-base resources (agent, volume, container) using `local.*` and `data.*` references instead of `var.*`
-5. Paste the apps, IDEs, and Claude Code blocks using the same approach
-6. Upload the single `main.tf` via `coder_upload_tar_file` MCP tool or `coder templates push`
+```hcl
+module "dev-base" {
+  source = "git::https://github.com/maximblack/coder-templates.git//modules/dev-base?ref=main"
+  # ... variables ...
+}
+```
 
-The `module "dev-base"` source path in the repo (`../../modules/dev-base`) is for local development only — it is never used in Coder deployment.
+Upload and deploy:
+```bash
+# Upload via Coder MCP tool: coder_upload_tar_file with {"main.tf": <content>}
+# Create template version + set as active
+```
 
-See the `template-creator` template's deployed version for a working example of the inlined approach.
+Templates can live in their respective app repos (e.g., `pente-elixir/.coder/main.tf`) — they only need this single file.
+
+The `module "dev-base"` source path in the repo (`../../modules/dev-base`) is for local development only.
+
+### Deploy Script (Fallback)
+
+If git source is unavailable, the deploy script inlines the module into a single `main.tf`:
+
+```bash
+python3 scripts/deploy.py <template-name>              # stdout
+python3 scripts/deploy.py <template-name> -o out.tf    # file
+```
+
+### Module Variables
+
+Templates pass variables to the module via `module "dev-base" { ... }`. The `agent_env` variable (`map(string)`, default `{}`) allows templates to inject additional environment variables into the workspace agent.
 
 ## MCP Integration
 

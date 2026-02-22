@@ -109,3 +109,9 @@ variable "sctp_port" {
   description = "SCTP port to expose from container to host (0 = disabled)"
   default     = 0
 }
+
+variable "agent_env" {
+  type        = map(string)
+  description = "Additional environment variables for the workspace agent"
+  default     = {}
+}
