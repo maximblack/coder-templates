@@ -190,17 +190,9 @@ data "coder_workspace_preset" "default" {
     echo "  Starting Phoenix dev server..."
     echo "========================================"
 
-    # Start Phoenix dev server with SCTP enabled (N2 interface for gNB connections)
+    # Start Phoenix dev server with SCTP + auto-seed
     cd "$PROJECT_DIR"
-    N2_ADDRESS=0.0.0.0 N2_PORT=38412 mix phx.server > /tmp/phoenix.log 2>&1 &
-
-    # Wait for Phoenix to be ready, then seed test data
-    echo "Waiting for Phoenix to start..."
-    for i in $(seq 1 60); do
-      curl -sf http://localhost:4000/ >/dev/null 2>&1 && break
-      sleep 1
-    done
-    cd "$PROJECT_DIR" && mix run priv/repo/seeds.exs 2>&1 | tee /tmp/seeds.log
+    AUTO_SEED=true N2_ADDRESS=0.0.0.0 N2_PORT=38412 mix phx.server > /tmp/phoenix.log 2>&1 &
 
     # --- UERANSIM gNB auto-start (requires Docker-in-Docker) ---
     if docker ps >/dev/null 2>&1; then
