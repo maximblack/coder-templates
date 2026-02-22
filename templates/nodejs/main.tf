@@ -456,6 +456,9 @@ data "coder_workspace_preset" "pente_react" {
     echo "  Pente React environment ready!"
     echo "========================================"
 
+    # Disable HTTPS in Vite — Coder preview proxy expects plain HTTP
+    sed -i 's/https: true/https: false/' vite.config.js 2>/dev/null || true
+
     if [ -f "package.json" ]; then
       npm run dev > /tmp/dev-server.log 2>&1 &
     fi
