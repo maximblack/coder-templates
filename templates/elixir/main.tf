@@ -107,10 +107,10 @@ data "coder_workspace_preset" "default" {
     fi
 
     # --- System Dependencies ---
-    if ! dpkg -l | grep -q lksctp-tools 2>/dev/null; then
+    if ! dpkg -l | grep -q libsctp-dev 2>/dev/null; then
       sudo apt-get update && sudo apt-get install -y \
         build-essential git curl wget ca-certificates \
-        lksctp-tools inotify-tools \
+        lksctp-tools libsctp-dev inotify-tools \
         autoconf libncurses-dev libssl-dev \
         unzip
     fi
@@ -143,11 +143,13 @@ data "coder_workspace_preset" "default" {
     grep -q 'mise activate' ~/.bashrc 2>/dev/null || echo 'eval "$(mise activate bash)"' >> ~/.bashrc
 
     # --- Install Erlang + Elixir via mise ---
+    # MISE_ERLANG_COMPILE=1 forces source build (needed for SCTP support via libsctp-dev)
+    export MISE_ERLANG_COMPILE=1
     export KERL_BUILD_DOCS=no
-    export KERL_CONFIGURE_OPTIONS="--without-javac --without-wx --without-debugger --without-observer --without-et"
+    export KERL_CONFIGURE_OPTIONS="--without-javac --without-wx --without-debugger --without-observer --without-et --enable-sctp"
 
     if ! mise list erlang 2>/dev/null | grep -q 28; then
-      echo "Installing Erlang OTP 28 (this may take a while on first run)..."
+      echo "Installing Erlang OTP 28 from source (this may take a while on first run)..."
       mise install erlang@28.0
     fi
     mise use -g erlang@28.0
@@ -188,9 +190,52 @@ data "coder_workspace_preset" "default" {
     echo "  Starting Phoenix dev server..."
     echo "========================================"
 
-    # Start Phoenix dev server in background
+    # Start Phoenix dev server with SCTP enabled (N2 interface for gNB connections)
     cd "$PROJECT_DIR"
-    mix phx.server > /tmp/phoenix.log 2>&1 &
+    N2_ADDRESS=0.0.0.0 N2_PORT=38412 mix phx.server > /tmp/phoenix.log 2>&1 &
+
+    # --- UERANSIM gNB auto-start (requires Docker-in-Docker) ---
+    if docker ps >/dev/null 2>&1; then
+      echo "Pre-pulling UERANSIM image..."
+      docker pull free5gc/ueransim:latest 2>/dev/null &
+      PULL_PID=$!
+
+      # Create workspace gNB config (host networking — connects to localhost SCTP)
+      mkdir -p /tmp/ueransim
+      cat > /tmp/ueransim/gnb.yaml <<'GNBEOF'
+mcc: '001'
+mnc: '01'
+nci: '0x000000010'
+idLength: 32
+tac: 1
+linkIp: 0.0.0.0
+ngapIp: 127.0.0.1
+amfConfigs:
+  - address: 127.0.0.1
+    port: 38412
+gtpIp: 127.0.0.1
+slices:
+  - sst: 1
+    sd: '000001'
+ignoreStreamIds: true
+GNBEOF
+
+      # Wait for image pull and Phoenix SCTP to be ready
+      wait $PULL_PID
+      echo "Waiting for SCTP listener..."
+      for i in $(seq 1 30); do
+        grep -q 38412 /proc/net/sctp/eps 2>/dev/null && break
+        sleep 1
+      done
+
+      # Start gNB with host networking so it reaches SCTP on localhost
+      docker run -d --name ueransim-gnb --network host \
+        -v /tmp/ueransim/gnb.yaml:/etc/ueransim/gnb.yaml:ro \
+        free5gc/ueransim:latest \
+        /ueransim/nr-gnb -c /etc/ueransim/gnb.yaml \
+        && echo "UERANSIM gNB started (auto-registering with AMF)." \
+        || echo "Warning: UERANSIM gNB failed to start."
+    fi
     EOT
 
     "preview_port"    = "4000"
