@@ -95,6 +95,15 @@ resource "coder_agent" "main" {
   }
 }
 
+# --- Mux (SSH multiplexing) ---
+
+module "mux" {
+  count    = var.workspace_start_count
+  source   = "registry.coder.com/coder/mux/coder"
+  version  = "1.1.0"
+  agent_id = coder_agent.main.id
+}
+
 # --- Docker Volume ---
 
 resource "docker_volume" "home_volume" {
