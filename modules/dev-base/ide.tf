@@ -31,12 +31,13 @@ module "cursor" {
 }
 
 # --- JetBrains ---
-
-module "jetbrains" {
-  count      = var.workspace_start_count
-  source     = "registry.coder.com/coder/jetbrains/coder"
-  version    = "~> 1.0"
-  agent_id   = coder_agent.main.id
-  agent_name = "main"
-  folder     = var.project_dir
-}
+# Commented out: prompts for IDE selection during coder update with no way to skip
+#
+# module "jetbrains" {
+#   count      = var.workspace_start_count
+#   source     = "registry.coder.com/coder/jetbrains/coder"
+#   version    = "~> 1.0"
+#   agent_id   = coder_agent.main.id
+#   agent_name = "main"
+#   folder     = var.project_dir
+# }
