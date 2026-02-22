@@ -110,6 +110,12 @@ variable "sctp_port" {
   default     = 0
 }
 
+variable "udp_ports" {
+  type        = list(number)
+  description = "UDP ports to expose from container to host (e.g. [8805] for PFCP)"
+  default     = []
+}
+
 variable "agent_env" {
   type        = map(string)
   description = "Additional environment variables for the workspace agent"

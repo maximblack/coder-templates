@@ -144,6 +144,15 @@ resource "docker_container" "workspace" {
       protocol = "sctp"
     }
   }
+  # UDP ports — expose to host (e.g. PFCP 8805, GTP-U 2152)
+  dynamic "ports" {
+    for_each = var.udp_ports
+    content {
+      internal = ports.value
+      external = ports.value
+      protocol = "udp"
+    }
+  }
   volumes {
     container_path = "/home/coder"
     volume_name    = docker_volume.home_volume.name
