@@ -275,4 +275,5 @@ module "dev-base" {
   preview_icon          = "${data.coder_workspace.me.access_url}/emojis/1f525.png"
   oauth_token           = var.claude_code_oauth_token
   docker_runtime        = "sysbox-runc"
+  sctp_port             = 38412
 }

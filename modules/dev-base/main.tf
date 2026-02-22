@@ -135,6 +135,15 @@ resource "docker_container" "workspace" {
     host = "host.docker.internal"
     ip   = "host-gateway"
   }
+  # SCTP N2 interface — expose to host for external gNB connections
+  dynamic "ports" {
+    for_each = var.sctp_port > 0 ? [var.sctp_port] : []
+    content {
+      internal = ports.value
+      external = ports.value
+      protocol = "sctp"
+    }
+  }
   volumes {
     container_path = "/home/coder"
     volume_name    = docker_volume.home_volume.name

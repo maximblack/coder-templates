@@ -103,3 +103,9 @@ variable "docker_runtime" {
   description = "Docker runtime for the workspace container (e.g. sysbox-runc for Docker-in-Docker)"
   default     = ""
 }
+
+variable "sctp_port" {
+  type        = number
+  description = "SCTP port to expose from container to host (0 = disabled)"
+  default     = 0
+}
