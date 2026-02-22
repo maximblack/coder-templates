@@ -459,7 +459,8 @@ data "coder_workspace_preset" "pente_react" {
     # Patch Vite for Coder preview proxy: disable HTTPS, allow all hosts
     sed -i 's/https: true,/https: false,\n    allowedHosts: true,/' vite.config.js 2>/dev/null || true
 
-    # Add Playwright MCP for Claude Code (browser automation for E2E testing)
+    # Install Playwright Chromium browser + add Playwright MCP for Claude Code
+    npx -y playwright install chromium 2>/dev/null || true
     $$HOME/.local/bin/claude mcp add-json playwright \
       '{"command":"npx","args":["-y","@playwright/mcp@latest","--headless"]}' 2>/dev/null || true
 
