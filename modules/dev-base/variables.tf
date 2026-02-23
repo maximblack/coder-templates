@@ -122,6 +122,21 @@ variable "udp_ports" {
   default     = []
 }
 
+variable "cap_add" {
+  type        = list(string)
+  description = "Linux capabilities to add to the workspace container (e.g. [\"NET_ADMIN\"])"
+  default     = []
+}
+
+variable "devices" {
+  type = list(object({
+    host_path      = string
+    container_path = string
+  }))
+  description = "Devices to mount into the workspace container (e.g. /dev/net/tun)"
+  default     = []
+}
+
 variable "agent_env" {
   type        = map(string)
   description = "Additional environment variables for the workspace agent"

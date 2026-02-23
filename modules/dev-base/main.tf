@@ -135,6 +135,19 @@ resource "docker_container" "workspace" {
     host = "host.docker.internal"
     ip   = "host-gateway"
   }
+  dynamic "capabilities" {
+    for_each = length(var.cap_add) > 0 ? [1] : []
+    content {
+      add = var.cap_add
+    }
+  }
+  dynamic "devices" {
+    for_each = var.devices
+    content {
+      host_path      = devices.value.host_path
+      container_path = devices.value.container_path
+    }
+  }
   # SCTP N2 interface — expose to host for external gNB connections
   dynamic "ports" {
     for_each = var.sctp_port > 0 ? [var.sctp_port] : []
