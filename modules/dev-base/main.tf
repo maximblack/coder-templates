@@ -144,6 +144,15 @@ resource "docker_container" "workspace" {
       protocol = "sctp"
     }
   }
+  # TCP ports — expose to host (e.g. Phoenix 4000 for metrics scraping)
+  dynamic "ports" {
+    for_each = var.tcp_ports
+    content {
+      internal = ports.value
+      external = ports.value
+      protocol = "tcp"
+    }
+  }
   # UDP ports — expose to host (e.g. PFCP 8805, GTP-U 2152)
   dynamic "ports" {
     for_each = var.udp_ports

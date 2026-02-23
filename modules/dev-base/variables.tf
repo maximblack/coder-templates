@@ -110,6 +110,12 @@ variable "sctp_port" {
   default     = 0
 }
 
+variable "tcp_ports" {
+  type        = list(number)
+  description = "TCP ports to expose from container to host (e.g. [4000] for Phoenix)"
+  default     = []
+}
+
 variable "udp_ports" {
   type        = list(number)
   description = "UDP ports to expose from container to host (e.g. [8805] for PFCP)"
