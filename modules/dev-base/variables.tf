@@ -137,6 +137,16 @@ variable "devices" {
   default     = []
 }
 
+variable "bind_mounts" {
+  type = list(object({
+    host_path      = string
+    container_path = string
+    read_only      = optional(bool, false)
+  }))
+  description = "Host paths to bind-mount into the workspace container (e.g. Docker socket)"
+  default     = []
+}
+
 variable "agent_env" {
   type        = map(string)
   description = "Additional environment variables for the workspace agent"

@@ -180,6 +180,14 @@ resource "docker_container" "workspace" {
     volume_name    = docker_volume.home_volume.name
     read_only      = false
   }
+  dynamic "volumes" {
+    for_each = var.bind_mounts
+    content {
+      host_path      = volumes.value.host_path
+      container_path = volumes.value.container_path
+      read_only      = volumes.value.read_only
+    }
+  }
   labels {
     label = "coder.owner"
     value = var.owner_name
