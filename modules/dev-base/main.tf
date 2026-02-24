@@ -95,6 +95,13 @@ resource "coder_agent" "main" {
   }
 }
 
+# --- External Docker Networks ---
+
+data "docker_network" "external" {
+  for_each = toset(var.docker_networks)
+  name     = each.value
+}
+
 # --- Docker Volume ---
 
 resource "docker_volume" "home_volume" {
@@ -186,6 +193,12 @@ resource "docker_container" "workspace" {
       host_path      = volumes.value.host_path
       container_path = volumes.value.container_path
       read_only      = volumes.value.read_only
+    }
+  }
+  dynamic "networks_advanced" {
+    for_each = data.docker_network.external
+    content {
+      name = networks_advanced.value.name
     }
   }
   labels {

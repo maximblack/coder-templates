@@ -152,3 +152,9 @@ variable "agent_env" {
   description = "Additional environment variables for the workspace agent"
   default     = {}
 }
+
+variable "docker_networks" {
+  type        = list(string)
+  description = "External Docker networks the workspace container should join (e.g. [\"dokploy-network\"])"
+  default     = []
+}
